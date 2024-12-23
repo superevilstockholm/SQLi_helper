@@ -9,12 +9,12 @@
           <textarea ref="textarea" class="form-control" v-model="url" placeholder="Insert URL here!" style="height: 100px;"></textarea>
           <div class="d-flex flex-row align-items-center gap-4 mt-3">
             <!-- Button '<' -->
-            <button class="btn py-1 px-4 border-1 text-warning border-warning">
-              &lt;
+            <button class="btn py-1 px-4 border-1 text-warning border-warning" @click="prevUrls()">
+              <i class="bi bi-arrow-counterclockwise"></i>
             </button>
             <!-- Button '>' -->
-            <button class="btn py-1 px-4 border-1 text-warning border-warning">
-              &gt;
+            <button class="btn py-1 px-4 border-1 text-warning border-warning" @click="nextUrls()">
+              <i class="bi bi-arrow-clockwise"></i>
             </button>
             <!-- Button 'Open' -->
             <a class="btn py-1 px-4 border-1 text-success border-success" target="_blank" :href="url">
@@ -119,6 +119,8 @@ export default {
   data() {
     return {
       url: '',
+      logs_url: [],
+      currentPrevUrls: [],
       // Second Section Data
       currentIndexSecondSection: 0,
       blocksSecondSection: [
@@ -215,9 +217,44 @@ export default {
       blocksVisibleFourthSection: 5,
     }
   },
+  watch: {
+    url(newUrl, oldUrl) {
+      if (newUrl !== oldUrl && newUrl !== '') {
+        if (this.logs_url[this.logs_url.length - 1] !== newUrl) {
+          this.logs_url.push(newUrl);
+        }
+      }
+    }
+  },
   methods: {
     clearUrlData() {
       this.url = "";
+      this.logs_url = [];
+      this.currentPrevUrls = [];
+    },
+    prevUrls() {
+      // Reset currentPrevUrls jika URL baru diketik
+      if (this.url !== this.logs_url[this.logs_url.length - 1]) {
+        this.currentPrevUrls = [];
+      }
+
+      if (this.logs_url.length >= 1) {
+        this.logs_url.pop();
+        this.currentPrevUrls.push(this.url);
+        this.url = this.logs_url[this.logs_url.length - 1];
+      } else {
+        alert("No previous URL found");
+      }
+    },
+    nextUrls() {
+      if (this.currentPrevUrls.length > 0) {
+        // Ambil URL berikutnya dari currentPrevUrls
+        const nextUrl = this.currentPrevUrls.pop();
+        this.logs_url.push(this.url);
+        this.url = nextUrl;
+      } else {
+        alert("No next URL found");
+      }
     },
     moveSliderSecondSection(direction) {
       const totalBlocks = this.blocksSecondSection.length;
@@ -257,6 +294,12 @@ export default {
     },
     insertAtCursor(text) {
       const textarea = this.$refs.textarea;
+      
+      if (!this.url) {
+        // Jika this.url kosong, set ke string kosong
+        this.url = '';
+      }
+
       const cursorStart = textarea.selectionStart;
       const cursorEnd = textarea.selectionEnd;
 
