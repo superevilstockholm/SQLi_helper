@@ -1,8 +1,12 @@
 # sqlihelper
-## V0.0.1
-### > Made By Bjorki199
+| SQL helper V0.0.1 for windows made by Bjorki199
 
-## Project setup
+## How to install
+### Clone the ropository
+```
+git clone https://github.com/superevilstockholm/SQLi_helper.git
+```
+### Install the package
 ```
 npm install
 ```
